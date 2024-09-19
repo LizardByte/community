@@ -1,0 +1,94 @@
+---
+# borrowed from
+# https://github.com/community/community/blob/6c83e35151f0af5614797de5edf90e77aa7e3e23/.github/workflows/recategorize-discussions.yml
+
+name: Recategorize labeled discussions
+
+on:
+  workflow_dispatch:
+    inputs:
+      label:
+        description: 'Label for discussions that will be recategorized'
+        default: ''
+        required: true
+        type: string
+      category:
+        description: 'The name of the category the labeled discussions will be moved to'
+        default: ''
+        required: true
+        type: string
+      max_to_move:
+        description: 'The maximum number of discussions we should try to move (up to 100), helpful in testing'
+        type: number
+        default: 50
+        required: true
+
+jobs:
+  recategorize-discussions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send greeting
+        run: echo "Moving Discussions labeled ${{ inputs.label }} to category ${{  inputs.category }}"
+
+      # Use the graphql search api to find all discussions with the label using the search() query
+      - name: Find labeled discussions
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          searchQuery="label:\"${{ inputs.label }}\" repo:${{ github.repository}} -category:\"${{ inputs.category }}\""
+          discussions="$(gh api graphql -F queryString="$searchQuery" -f query='
+            query($queryString: String!) {
+              search(query:$queryString,type:DISCUSSION,first:${{ inputs.max_to_move }}){
+                nodes{
+                  ...on Discussion{id}
+                }
+              }
+            }' | jq -r '.data.search.nodes[].id')"
+          echo 'Found discussions: '"$discussions"
+          echo 'DISCUSSIONS_TO_TRANSFER='$discussions >> $GITHUB_ENV
+
+      - name: Find the id of the discussion category in the current repository
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # split github.repository into owner and name
+          repoName=$(echo ${{ github.repository }} | cut -d '/' -f 2)
+          found_category=$(gh api graphql -F name="$repoName" -F owner="${{ github.repository_owner }}" -f query='
+            query($name: String!, $owner: String!){
+              repository(owner:$owner, name:$name){
+                discussionCategories(first:100){
+                  nodes{
+                    id
+                    name
+                  }
+                }
+              }
+            }' | jq -r --arg category "${{ inputs.category }}" '.data.repository.discussionCategories.nodes[] | \
+              select(.name==$category) | .id')
+          echo 'CATEGORY_ID='$found_category >> $GITHUB_ENV
+
+      - name: Dryrun
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Dryrun"
+          echo "DISCUSSIONS_TO_TRANSFER=$DISCUSSIONS_TO_TRANSFER"
+          echo "CATEGORY_ID=$CATEGORY_ID"
+
+      - name: Move discussions
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # DISCUSSIONS_TO_TRANSFER is in the form "id_1 id_2 id_3"
+          # Loop over the ids and use the updateDiscussion mutation to move the discussion to the new category
+          for discussion_id in $DISCUSSIONS_TO_TRANSFER; do
+            echo "Moving discussion $discussion_id to category $CATEGORY_ID"
+            gh api graphql -F discussionId="$discussion_id" -F categoryId="$CATEGORY_ID" -f query='
+              mutation($discussionId: ID!, $categoryId: ID!) {
+                updateDiscussion(input: {discussionId: $discussionId, categoryId: $categoryId}) {
+                  discussion {
+                    number
+                  }
+                }
+              }'
+          done
