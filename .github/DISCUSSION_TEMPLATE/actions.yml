@@ -1,6 +1,6 @@
 ---
 title: "<Your question or feedback about our GitHub actions>"
-labels: [actions]
+labels: [Actions]
 body:
   - type: markdown
     attributes:
