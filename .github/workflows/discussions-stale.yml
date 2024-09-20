@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       dry-run:
-        description: 'Run the action without closing any discussions'
+        description: 'dry-run: when checked, no discussions will be closed'
         type: boolean
 
 jobs:
@@ -21,6 +21,7 @@ jobs:
           - 'GSMS'
           - 'Sunshine'
           - 'Themerr'
+      max-parallel: 1  # run one at a time to attempt to avoid GitHub api rate limits
     steps:
       - name: stalesweeper
         uses: steffen-karlsson/stalesweeper@v1.1.1
@@ -37,3 +38,4 @@ jobs:
           close-reason: 'OUTDATED'
           # todo: dry-run default is true during testing
           dry-run: ${{ github.event_name == 'schedule' && 'true' || github.event.inputs.dry-run }}
+          verbose: 'true'
