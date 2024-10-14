@@ -1,14 +1,14 @@
 ---
-title: "<Your question or feedback about our GitHub actions>"
-labels: [Actions]
+title: "<Your question or feedback about our libraries>"
+labels: [Libraries]
 body:
   - type: markdown
     attributes:
       value: >
         ⚠️ This category is solely for discussions and feedback on
-        LizardByte's GitHub actions. ⚠️
+        LizardByte's libraries. ⚠️
 
-        NOTE: If you post in this category about topics other than our GitHub actions,
+        NOTE: If you post in this category about topics other than our libraries,
         your post may be moved or deleted without warning. Users who post spam or violate of our
         [Code of Conduct](https://github.com/LizardByte/.github/blob/master/CODE_OF_CONDUCT.md) will be blocked.
   - type: dropdown
@@ -17,13 +17,11 @@ body:
       description: Which product would you like to discuss?
       multiple: false
       options:
-        - "copr-ci"
-        - "create-release-action"
-        - "homebrew-release-action"
-        - "jellyfin-plugin-repo"
-        - "setup-python-action"
-        - "setup-release-action"
-        - "update-changelog-action"
+        - "doxyconfig"
+        - "libdisplaydevice"
+        - "shared-web"
+        - "tray"
+        - "uno"
         - "other/unlisted"
     validations:
       required: true
