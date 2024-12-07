@@ -19,6 +19,7 @@ body:
       options:
         - "copr-ci"
         - "create-release-action"
+        - "facebook-post-action"
         - "homebrew-release-action"
         - "jellyfin-plugin-repo"
         - "setup-python-action"
