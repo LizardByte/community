@@ -21,3 +21,4 @@ jobs:
           dry-run: false
           max-age: 48h
           labels: blog
+          url-only: true
