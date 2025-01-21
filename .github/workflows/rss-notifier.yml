@@ -142,5 +142,10 @@ jobs:
           close_reason="completed"
           lock_reason="resolved"
 
-          gh issue close ${{ github.event.issue.number }} --comment "${comment}" --reason "${close_reason}"
-          gh issue lock ${{ github.event.issue.number }} --reason "${lock_reason}"
+          gh issue close ${{ github.event.issue.number }} \
+            --comment "${comment}" \
+            --reason "${close_reason}" \
+            --repo "${{ github.repository }}"
+          gh issue lock ${{ github.event.issue.number }} \
+            --reason "${lock_reason}" \
+            --repo "${{ github.repository }}"
