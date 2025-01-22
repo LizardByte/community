@@ -132,12 +132,22 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
         run: |
+          get_emoji() {
+            if [ "$1" == "success" ]; then
+              echo ":white_check_mark:"
+            elif [ "$1" == "failure" ]; then
+              echo ":x:"
+            else
+              echo ":grey_question:"
+            fi
+          }
+
           comment="| Job | Status | Post URL |"
-          comment+="| --- | ------ | -------- |"
-          comment+="| Discord | ${{ needs.discord.result }} | ${{ needs.discord.outputs.post-url }} |"
-          comment+="| Facebook | ${{ needs.facebook.result }} | ${{ needs.facebook.outputs.post-url }} |"
-          comment+="| Reddit | ${{ needs.reddit.result }} | ${{ needs.reddit.outputs.post-url }} |"
-          comment+="| X | ${{ needs.x.result }} | ${{ needs.x.outputs.post-url }} |"
+          comment+="| --- |:------:| -------- |"
+          comment+="| Discord | $(get_emoji "${{ needs.discord.result }}") | ${{ needs.discord.outputs.post-url }} |"
+          comment+="| Facebook | $(get_emoji "${{ needs.facebook.result }}") | ${{ needs.facebook.outputs.post-url }} |"
+          comment+="| Reddit | $(get_emoji "${{ needs.reddit.result }}") | ${{ needs.reddit.outputs.post-url }} |"
+          comment+="| X | $(get_emoji "${{ needs.x.result }}") | ${{ needs.x.outputs.post-url }} |"
 
           close_reason="completed"
           lock_reason="resolved"
