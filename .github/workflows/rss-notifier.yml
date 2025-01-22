@@ -132,12 +132,12 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
         run: |
-          comment="| Job | Status | Post URL |\n"
-          comment+="| --- | ------ | -------- |\n"
-          comment+="| Discord | ${{ needs.discord.result }} | ${{ needs.discord.outputs.post-url }} |\n"
-          comment+="| Facebook | ${{ needs.facebook.result }} | ${{ needs.facebook.outputs.post-url }} |\n"
-          comment+="| Reddit | ${{ needs.reddit.result }} | ${{ needs.reddit.outputs.post-url }} |\n"
-          comment+="| X | ${{ needs.x.result }} | ${{ needs.x.outputs.post-url }} |\n"
+          comment="| Job | Status | Post URL |"
+          comment+="| --- | ------ | -------- |"
+          comment+="| Discord | ${{ needs.discord.result }} | ${{ needs.discord.outputs.post-url }} |"
+          comment+="| Facebook | ${{ needs.facebook.result }} | ${{ needs.facebook.outputs.post-url }} |"
+          comment+="| Reddit | ${{ needs.reddit.result }} | ${{ needs.reddit.outputs.post-url }} |"
+          comment+="| X | ${{ needs.x.result }} | ${{ needs.x.outputs.post-url }} |"
 
           close_reason="completed"
           lock_reason="resolved"
