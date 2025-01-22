@@ -58,7 +58,7 @@ jobs:
         uses: sarisia/actions-status-discord@v1
         with:
           avatar_url: ${{ vars.ORG_LOGO_URL }}256
-          color: 0x00ff00  # green
+          color: 0x${{ vars.COLOR_HEX_GREEN }}
           nodetail: true
           nofail: false
           title: ${{ github.event.issue.title }}
