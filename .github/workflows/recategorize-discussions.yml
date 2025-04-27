@@ -3,6 +3,8 @@
 # https://github.com/community/community/blob/6c83e35151f0af5614797de5edf90e77aa7e3e23/.github/workflows/recategorize-discussions.yml
 
 name: Recategorize labeled discussions
+permissions:
+  discussions: write
 
 on:
   workflow_dispatch:

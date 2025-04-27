@@ -1,5 +1,6 @@
 ---
 name: Close Stale Discussions
+permissions: {}
 
 on:
   schedule:

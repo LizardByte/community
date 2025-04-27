@@ -1,9 +1,11 @@
 ---
 name: RSS Notifier
+permissions: {}
 
 on:
   issues:
-    types: [opened]
+    types:
+      - opened
 
 jobs:
   authorize:

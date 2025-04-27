@@ -3,10 +3,14 @@
 # https://github.com/community/community/blob/6c83e35151f0af5614797de5edf90e77aa7e3e23/.github/workflows/label-templated-discussions.yml
 
 name: Label Templated Discussions
+permissions:
+  contents: read
+  discussions: write
 
 on:
   discussion:
-    types: [created]
+    types:
+      - created
 
 jobs:
   label-templated-discussion:
@@ -69,7 +73,7 @@ jobs:
 
       - name: Fetch label id for selected topic
         id: fetch_label_id
-        if: ${{ steps.get_selected_topic.outputs.result != '' }}
+        if: steps.get_selected_topic.outputs.result != ''
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OWNER: ${{ github.repository_owner }}
@@ -93,7 +97,7 @@ jobs:
           echo 'LABEL_ID='$(jq '.data.repository.labels.edges[].node | .id ' repository_label_data.json) >> $GITHUB_ENV
 
       - name: Label the discussion
-        if: ${{ steps.get_selected_topic.outputs.result != '' }}
+        if: steps.get_selected_topic.outputs.result != ''
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
