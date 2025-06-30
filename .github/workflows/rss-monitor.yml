@@ -20,6 +20,6 @@ jobs:
           feed: https://lizardbyte.github.io/feed.xml
           character-limit: 0
           dry-run: false
-          max-age: 48h
+          max-age: 168h
           labels: blog
           url-only: true
