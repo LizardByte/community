@@ -18,13 +18,13 @@ body:
       multiple: false
       options:
         - "copr-ci"
-        - "create-release-action"
-        - "facebook-post-action"
-        - "homebrew-release-action"
+        - "facebook_post"
         - "jellyfin-plugin-repo"
-        - "setup-python-action"
-        - "setup-release-action"
-        - "update-changelog-action"
+        - "release_changelog"
+        - "release_create"
+        - "release_homebrew"
+        - "release_setup"
+        - "setup_python"
         - "other/unlisted"
     validations:
       required: true
