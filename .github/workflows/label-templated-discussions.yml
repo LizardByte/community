@@ -25,18 +25,20 @@ jobs:
           REPO: ${{ github.event.repository.name }}
           DISCUSSION_NUMBER: ${{ github.event.discussion.number }}
         run: |
-          gh api graphql -F owner=$OWNER -F name=$REPO -F number=$DISCUSSION_NUMBER  -f query='
-            query($owner: String!, $name: String!, $number: Int!) {
-              repository(owner: $owner, name: $name){
-                discussion(number: $number) {
+          gh api graphql -F owner="${OWNER}" -F name="${REPO}" -F number="${DISCUSSION_NUMBER}" -f query="
+            query(\$owner: String!, \$name: String!, \$number: Int!) {
+              repository(owner: \$owner, name: \$name){
+                discussion(number: \$number) {
                   bodyHTML
                   id
                 }
               }
-            }' > discussion_data.json
+            }" > discussion_data.json
 
-          echo 'DISCUSSION_BODY_HTML='$(jq '.data.repository.discussion.bodyHTML' discussion_data.json) >> $GITHUB_ENV
-          echo 'DISCUSSION_ID='$(jq '.data.repository.discussion.id' discussion_data.json) >> $GITHUB_ENV
+          {
+            echo "DISCUSSION_BODY_HTML=$(jq -r '.data.repository.discussion.bodyHTML' discussion_data.json)"
+            echo "DISCUSSION_ID=$(jq -r '.data.repository.discussion.id' discussion_data.json)"
+          } >> "${GITHUB_ENV}"
 
       - run: npm install jsdom
 
@@ -80,10 +82,10 @@ jobs:
           REPO: ${{ github.event.repository.name }}
           TOPIC: ${{ steps.get_selected_topic.outputs.result }}
         run: |
-          gh api graphql -F owner=$OWNER -F name=$REPO -F topic="$TOPIC"  -f query='
-            query($owner: String!, $name: String!, $topic: String) {
-              repository(owner: $owner, name: $name){
-                labels(first: 1, query: $topic) {
+          gh api graphql -F owner="${OWNER}" -F name="${REPO}" -F topic="${TOPIC}" -f query="
+            query(\$owner: String!, \$name: String!, \$topic: String) {
+              repository(owner: \$owner, name: \$name){
+                labels(first: 1, query: \$topic) {
                   edges {
                     node {
                       id
@@ -92,18 +94,20 @@ jobs:
                   }
                 }
               }
-            }' > repository_label_data.json
+            }" > repository_label_data.json
 
-          echo 'LABEL_ID='$(jq '.data.repository.labels.edges[].node | .id ' repository_label_data.json) >> $GITHUB_ENV
+          {
+            echo "LABEL_ID=$(jq -r '.data.repository.labels.edges[].node.id' repository_label_data.json)"
+          } >> "${GITHUB_ENV}"
 
       - name: Label the discussion
         if: steps.get_selected_topic.outputs.result != ''
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh api graphql -f query='
-            mutation($labelableId: ID!, $labelIds: [ID!]!) {
-              addLabelsToLabelable(input: {labelableId: $labelableId, labelIds: $labelIds}) {
+          gh api graphql -f labelableId="${DISCUSSION_ID}" -f labelIds="${LABEL_ID}" -f query="
+            mutation(\$labelableId: ID!, \$labelIds: [ID!]!) {
+              addLabelsToLabelable(input: {labelableId: \$labelableId, labelIds: \$labelIds}) {
                 labelable {
                   labels(first: 10) {
                     edges {
@@ -115,4 +119,4 @@ jobs:
                   }
                 }
               }
-            }' -f labelableId=$DISCUSSION_ID -f labelIds=$LABEL_ID
+            }"
