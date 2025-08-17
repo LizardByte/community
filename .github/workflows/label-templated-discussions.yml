@@ -36,7 +36,8 @@ jobs:
             }" > discussion_data.json
 
           {
-            echo "DISCUSSION_BODY_HTML=$(jq -r '.data.repository.discussion.bodyHTML' discussion_data.json)"
+            echo "DISCUSSION_BODY_HTML=$(jq -r '.data.repository.discussion.bodyHTML' discussion_data.json | \
+              tr -d '\r' | awk '{printf "%s", $0}')"
             echo "DISCUSSION_ID=$(jq -r '.data.repository.discussion.id' discussion_data.json)"
           } >> "${GITHUB_ENV}"
 
