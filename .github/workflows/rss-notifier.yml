@@ -144,12 +144,13 @@ jobs:
             fi
           }
 
-          comment="| Job | Status | Post URL |"
-          comment+="| --- |:------:| -------- |"
-          comment+="| Discord | $(get_emoji "${{ needs.discord.result }}") | ${{ needs.discord.outputs.post-url }} |"
-          comment+="| Facebook | $(get_emoji "${{ needs.facebook.result }}") | ${{ needs.facebook.outputs.post-url }} |"
-          comment+="| Reddit | $(get_emoji "${{ needs.reddit.result }}") | ${{ needs.reddit.outputs.post-url }} |"
-          comment+="| X | $(get_emoji "${{ needs.x.result }}") | ${{ needs.x.outputs.post-url }} |"
+          # Build comment as a single line with literal newlines
+          comment="| Job | Status | Post URL |
+          | --- |:------:| -------- |
+          | Discord | $(get_emoji "${{ needs.discord.result }}") | ${{ needs.discord.outputs.post-url }} |
+          | Facebook | $(get_emoji "${{ needs.facebook.result }}") | ${{ needs.facebook.outputs.post-url }} |
+          | Reddit | $(get_emoji "${{ needs.reddit.result }}") | ${{ needs.reddit.outputs.post-url }} |
+          | X | $(get_emoji "${{ needs.x.result }}") | ${{ needs.x.outputs.post-url }} |"
 
           close_reason="completed"
           lock_reason="resolved"
