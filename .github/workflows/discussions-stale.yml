@@ -25,7 +25,7 @@ jobs:
       max-parallel: 1  # run one at a time to attempt to avoid GitHub api rate limits
     steps:
       - name: stalesweeper
-        uses: steffen-karlsson/stalesweeper@cbed739a89b490f703d8466fb59b37ddc0915889  # v1.1.1
+        uses: thenick775/stalesweeper@eeb7723f2e609a0380ff8ca7813580944dd193a6  # repo does not have releases
         with:
           repo-token: ${{ secrets.GH_BOT_TOKEN }}
           message: >
@@ -39,4 +39,3 @@ jobs:
           close-reason: 'OUTDATED'
           # todo: dry-run default is true during testing
           dry-run: ${{ github.event_name == 'schedule' && 'true' || github.event.inputs.dry-run }}
-          verbose: 'true'
