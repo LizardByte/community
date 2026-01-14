@@ -20,22 +20,23 @@ jobs:
         category:
           - 'Actions'
           - 'GSMS'
+          - 'Libraries'
           - 'Sunshine'
           - 'Themerr'
       max-parallel: 1  # run one at a time to attempt to avoid GitHub api rate limits
     steps:
       - name: stalesweeper
         uses: thenick775/stalesweeper@eeb7723f2e609a0380ff8ca7813580944dd193a6  # repo does not have releases
+        env:
+          DAYS_BEFORE_CLOSE: '365'
+          DRY_RUN: ${{ github.event_name == 'schedule' && 'false' || github.event.inputs.dry-run }}
         with:
-          repo-token: ${{ secrets.GH_BOT_TOKEN }}
-          message: >
-            It seems this discussion hasn't had any activity in the past 90 days.
-            To help keep our backlog tidy, we'll be closing this discussion.
-            If it's still something you'd like addressed, please let us know by leaving a comment.
-            Thanks!
-          days-before-close: '90'
-          close-unanswered: 'true'
           category: ${{ matrix.category }}
           close-reason: 'OUTDATED'
-          # todo: dry-run default is true during testing
-          dry-run: ${{ github.event_name == 'schedule' && 'true' || github.event.inputs.dry-run }}
+          close-unanswered: 'true'
+          days-before-close: '${{ env.DAYS_BEFORE_CLOSE}}'
+          dry-run: ${{ env.DRY_RUN }}
+          exempt-labels: 'Feature Request'
+          message: >
+            This discussion was automatically closed because it has been inactive for ${{ env.DAYS_BEFORE_CLOSE}} days.
+          repo-token: ${{ secrets.GH_BOT_TOKEN }}
