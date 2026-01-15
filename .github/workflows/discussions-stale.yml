@@ -7,6 +7,11 @@ on:
     - cron: '00 11 * * *'
   workflow_dispatch:
     inputs:
+      days-before-close:
+        description: 'days-before-close: number of days of inactivity before closing a discussion'
+        required: false
+        default: '365'
+        type: string
       dry-run:
         description: 'dry-run: when checked, no discussions will be closed'
         type: boolean
@@ -14,24 +19,14 @@ on:
 jobs:
   close-stale-discussions:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        category:
-          - 'Actions'
-          - 'GSMS'
-          - 'Libraries'
-          - 'Sunshine'
-          - 'Themerr'
-      max-parallel: 1  # run one at a time to attempt to avoid GitHub api rate limits
     steps:
       - name: stalesweeper
-        uses: thenick775/stalesweeper@eeb7723f2e609a0380ff8ca7813580944dd193a6  # repo does not have releases
+        uses: thenick775/stalesweeper@1970ca7c8eb73680d0be642c0a60a08e28a9692e  # repo does not have releases
         env:
-          DAYS_BEFORE_CLOSE: '365'
+          DAYS_BEFORE_CLOSE: ${{ github.event_name == 'schedule' && '365' || github.event.inputs.days-before-close }}
           DRY_RUN: ${{ github.event_name == 'schedule' && 'false' || github.event.inputs.dry-run }}
         with:
-          category: ${{ matrix.category }}
+          categories: 'Actions,GSMS,Libraries,Sunshine,Themerr'
           close-reason: 'OUTDATED'
           close-unanswered: 'true'
           days-before-close: '${{ env.DAYS_BEFORE_CLOSE}}'
