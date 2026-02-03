@@ -41,7 +41,7 @@ jobs:
             echo "DISCUSSION_ID=$(jq -r '.data.repository.discussion.id' discussion_data.json)"
           } >> "${GITHUB_ENV}"
 
-      - run: npm install jsdom
+      - run: npm install jsdom --ignore-scripts
 
       - name: Get selected topic
         id: get_selected_topic
