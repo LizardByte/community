@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Authorize
         id: authorize
-        uses: actions/github-script@v8
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd  # v8.0.0
         with:
           github-token: ${{ secrets.GH_BOT_TOKEN }}
           result-encoding: string
@@ -76,7 +76,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: facebook-post-action
-        uses: LizardByte/actions/actions/facebook_post@v2026.212.22356
+        uses: LizardByte/actions/actions/facebook_post@9bf3ef783775e17fe6b8dde3585d94ec570b93c2  # v2026.212.22356
         with:
           page_id: ${{ secrets.FACEBOOK_PAGE_ID }}
           access_token: ${{ secrets.FACEBOOK_ACCESS_TOKEN }}
