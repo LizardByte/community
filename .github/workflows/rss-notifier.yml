@@ -65,7 +65,7 @@ jobs:
           nofail: false
           title: ${{ github.event.issue.title }}
           url: ${{ github.event.issue.body }}
-          username: ${{ secrets.DISCORD_USERNAME }}
+          username: ${{ vars.DISCORD_USERNAME }}
           webhook: ${{ secrets.DISCORD_ANNOUNCEMENT_WEBHOOK }}
 
   facebook:
@@ -94,7 +94,7 @@ jobs:
         id: post
         uses: bluwy/release-for-reddit-action@b4ee0e0d64da893e0428912aac5cda675082bd85  # v2
         with:
-          username: ${{ secrets.REDDIT_USERNAME }}
+          username: ${{ vars.REDDIT_USERNAME }}
           password: ${{ secrets.REDDIT_PASSWORD }}
           app-id: ${{ secrets.REDDIT_CLIENT_ID }}
           app-secret: ${{ secrets.REDDIT_CLIENT_SECRET }}
