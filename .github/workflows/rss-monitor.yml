@@ -14,7 +14,7 @@ jobs:
       # TODO: Use that to run the follow up action instead of using the separate `rss-notifier.yml` workflow
       # TODO: Separate release blog posts and use different labels/discord channel for them
       - name: RSS to issues
-        uses: git-for-windows/rss-to-issues@99d302b353c4751ca1bda6130fb24934ec12e01e  # v0.0.13
+        uses: git-for-windows/rss-to-issues@48c22f7f733ca11653f08694a2868fcda4246e89  # v0.3.4
         with:
           github-token: ${{ secrets.GH_BOT_TOKEN }}
           feed: https://lizardbyte.github.io/feed.xml
