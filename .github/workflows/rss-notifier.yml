@@ -49,6 +49,33 @@ jobs:
 
             return 'true';
 
+  moonlight-conditions:
+    if: needs.authorize.outputs.authorized == 'true'
+    needs: authorize
+    outputs:
+      post: ${{ steps.conditions.outputs.result }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Moonlight Discord conditions
+        id: conditions
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3  # v9.0.0
+        with:
+          result-encoding: string
+          script: |
+            const title = context.payload.issue.title;
+            const conditions = [
+                {
+                    name: 'Sunshine release',
+                    matches: /^Sunshine v[0-9]+(?:\.[0-9]+)* Released$/.test(title)
+                }
+            ];
+
+            for (const condition of conditions) {
+                console.log(`${condition.name}: ${condition.matches}`);
+            }
+
+            return conditions.some(condition => condition.matches) ? 'true' : 'false';
+
   discord:
     if: needs.authorize.outputs.authorized == 'true'
     needs: authorize
@@ -67,6 +94,25 @@ jobs:
           url: ${{ github.event.issue.body }}
           username: ${{ vars.DISCORD_USERNAME }}
           webhook: ${{ secrets.DISCORD_ANNOUNCEMENT_WEBHOOK }}
+
+  discord-moonlight:
+    if: needs.moonlight-conditions.outputs.post == 'true'
+    needs: moonlight-conditions
+    outputs:
+      post-url: "https://discord.com/channels/352065098472488960/465373705846128660"
+    runs-on: ubuntu-latest
+    steps:
+      - name: discord-moonlight
+        uses: sarisia/actions-status-discord@eb045afee445dc055c18d3d90bd0f244fd062708  # v1.16.0
+        with:
+          avatar_url: ${{ vars.ORG_LOGO_URL }}256
+          color: 0x${{ vars.COLOR_HEX_GREEN }}
+          nodetail: true
+          nofail: false
+          title: ${{ github.event.issue.title }}
+          url: ${{ github.event.issue.body }}
+          username: ${{ vars.DISCORD_USERNAME }}
+          webhook: ${{ secrets.DISCORD_RELEASE_WEBHOOK_MOONLIGHT }}
 
   facebook:
     if: needs.authorize.outputs.authorized == 'true'
@@ -108,6 +154,8 @@ jobs:
     needs:
       - authorize
       - discord
+      - discord-moonlight
+      - moonlight-conditions
       - facebook
       - reddit
     runs-on: ubuntu-latest
@@ -132,6 +180,13 @@ jobs:
           | Discord | $(get_emoji "${{ needs.discord.result }}") | ${{ needs.discord.outputs.post-url }} |
           | Facebook | $(get_emoji "${{ needs.facebook.result }}") | ${{ needs.facebook.outputs.post-url }} |
           | Reddit | $(get_emoji "${{ needs.reddit.result }}") | ${{ needs.reddit.outputs.post-url }} |"
+
+          if [ "${{ needs.moonlight-conditions.outputs.post }}" == "true" ]; then
+            moonlight_status="${{ needs.discord-moonlight.result }}"
+            moonlight_url="${{ needs.discord-moonlight.outputs.post-url }}"
+            comment="${comment}
+          | Discord Moonlight | $(get_emoji "${moonlight_status}") | ${moonlight_url} |"
+          fi
 
           close_reason="completed"
           lock_reason="resolved"
