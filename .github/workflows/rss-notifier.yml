@@ -103,31 +103,13 @@ jobs:
           url: ${{ github.event.issue.body }}
           flair-id: ${{ secrets.REDDIT_FLAIR_ID }}  # https://www.reddit.com/r/<subreddit>>/api/link_flair.json
 
-  x:
-    if: needs.authorize.outputs.authorized == 'true'
-    needs: authorize
-    outputs:
-      post-url: "https://x.com/LizardByteDev"
-    runs-on: ubuntu-latest
-    steps:
-      - name: x
-        uses: nearform-actions/github-action-notify-twitter@b3fa623c2f320117e8a08e20564c4ce0a5e67930  # v1.2.3
-        # alternative: noweh/post-tweet-v2-action@v1.0
-        with:
-          message: "${{ github.event.issue.title }}: ${{ github.event.issue.body }}"
-          twitter-app-key: ${{ secrets.X_APP_KEY }}
-          twitter-app-secret: ${{ secrets.X_APP_SECRET }}
-          twitter-access-token: ${{ secrets.X_ACCESS_TOKEN }}
-          twitter-access-token-secret: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
-
   close-issue:
-    if: needs.authorize.outputs.authorized == 'true'
+    if: always() && needs.authorize.outputs.authorized == 'true'
     needs:
       - authorize
       - discord
       - facebook
       - reddit
-      - x
     runs-on: ubuntu-latest
     steps:
       - name: Close issue
@@ -149,8 +131,7 @@ jobs:
           | --- |:------:| -------- |
           | Discord | $(get_emoji "${{ needs.discord.result }}") | ${{ needs.discord.outputs.post-url }} |
           | Facebook | $(get_emoji "${{ needs.facebook.result }}") | ${{ needs.facebook.outputs.post-url }} |
-          | Reddit | $(get_emoji "${{ needs.reddit.result }}") | ${{ needs.reddit.outputs.post-url }} |
-          | X | $(get_emoji "${{ needs.x.result }}") | ${{ needs.x.outputs.post-url }} |"
+          | Reddit | $(get_emoji "${{ needs.reddit.result }}") | ${{ needs.reddit.outputs.post-url }} |"
 
           close_reason="completed"
           lock_reason="resolved"
