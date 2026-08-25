@@ -17,11 +17,15 @@ body:
       description: Which product would you like to discuss?
       multiple: false
       options:
+        - "contribkit"
         - "doxyconfig"
+        - "gamepad-helper"
         - "libdisplaydevice"
+        - "libvirtualdisplay"
+        - "libvirtualhid"
+        - "lizardbyte-common"
         - "shared-web"
         - "tray"
-        - "uno"
         - "other/unlisted"
     validations:
       required: true

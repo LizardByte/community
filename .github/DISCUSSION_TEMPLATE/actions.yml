@@ -17,14 +17,24 @@ body:
       description: Which product would you like to discuss?
       multiple: false
       options:
+        - "artifact_comment"
+        - "audit_repos"
         - "copr-ci"
         - "facebook_post"
+        - "get_changed_files"
         - "jellyfin-plugin-repo"
+        - "monitor_space"
+        - "morespace"
+        - "pinact"
         - "release_changelog"
         - "release_create"
         - "release_homebrew"
         - "release_setup"
+        - "screenshot"
+        - "setup_cuda"
         - "setup_python"
+        - "trailing_spaces"
+        - "virtual_desktop"
         - "other/unlisted"
     validations:
       required: true
