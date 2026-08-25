@@ -133,7 +133,7 @@ jobs:
     if: needs.authorize.outputs.authorized == 'true'
     needs: authorize
     outputs:
-      post-url: ${{ steps.post.outputs.postUrl }}
+      post-url: "https://www.reddit.com${{ steps.post.outputs.postUrl }}"
     runs-on: ubuntu-latest
     steps:
       - name: reddit
