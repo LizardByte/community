@@ -162,6 +162,21 @@ jobs:
 
           echo "url=${normalized_url}" >> "${GITHUB_OUTPUT}"
 
+  x:
+    if: needs.authorize.outputs.authorized == 'true'
+    needs: authorize
+    outputs:
+      post-url: ${{ steps.post.outputs.post_url || 'https://x.com/LizardByteDev' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post to X through Buffer
+        id: post
+        uses: LizardByte/actions/actions/buffer_post@def4fdac92797d03bb6d02d7c24ddfa5e7d83825
+        with:
+          api_key: ${{ secrets.BUFFER_API_KEY }}
+          channel_id: ${{ vars.BUFFER_X_CHANNEL_ID }}
+          message: ${{ github.event.issue.body }}
+
   close-issue:
     if: always() && needs.authorize.outputs.authorized == 'true'
     needs:
@@ -171,6 +186,7 @@ jobs:
       - moonlight-conditions
       - facebook
       - reddit
+      - x
     runs-on: ubuntu-latest
     steps:
       - name: Close issue
@@ -192,7 +208,8 @@ jobs:
           | --- |:------:| -------- |
           | Discord | $(get_emoji "${{ needs.discord.result }}") | ${{ needs.discord.outputs.post-url }} |
           | Facebook | $(get_emoji "${{ needs.facebook.result }}") | ${{ needs.facebook.outputs.post-url }} |
-          | Reddit | $(get_emoji "${{ needs.reddit.result }}") | ${{ needs.reddit.outputs.post-url }} |"
+          | Reddit | $(get_emoji "${{ needs.reddit.result }}") | ${{ needs.reddit.outputs.post-url }} |
+          | X | $(get_emoji "${{ needs.x.result }}") | ${{ needs.x.outputs.post-url }} |"
 
           if [ "${{ needs.moonlight-conditions.outputs.post }}" == "true" ]; then
             moonlight_status="${{ needs.discord-moonlight.result }}"
