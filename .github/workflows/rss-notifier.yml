@@ -133,7 +133,7 @@ jobs:
     if: needs.authorize.outputs.authorized == 'true'
     needs: authorize
     outputs:
-      post-url: "https://www.reddit.com${{ steps.post.outputs.postUrl }}"
+      post-url: ${{ steps.post_url.outputs.url }}
     runs-on: ubuntu-latest
     steps:
       - name: reddit
@@ -147,7 +147,20 @@ jobs:
           subreddit: ${{ vars.REDDIT_SUBREDDIT }}
           title: ${{ github.event.issue.title }}
           url: ${{ github.event.issue.body }}
-          flair-id: ${{ secrets.REDDIT_FLAIR_ID }}  # https://www.reddit.com/r/<subreddit>>/api/link_flair.json
+          flair-id: ${{ secrets.REDDIT_FLAIR_ID }}  # https://www.reddit.com/r/<subreddit>/api/link_flair.json
+
+      - name: Normalize Reddit post URL
+        id: post_url
+        env:
+          POST_URL: ${{ steps.post.outputs.postUrl }}
+        run: |
+          if [[ "${POST_URL}" =~ ^https?:// ]]; then
+            normalized_url="${POST_URL}"
+          else
+            normalized_url="https://www.reddit.com${POST_URL}"
+          fi
+
+          echo "url=${normalized_url}" >> "${GITHUB_OUTPUT}"
 
   close-issue:
     if: always() && needs.authorize.outputs.authorized == 'true'
