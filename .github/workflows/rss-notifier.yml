@@ -47,6 +47,64 @@ jobs:
                 return 'false';
             }
 
+            // Independently enforce idempotency before publishing. The RSS monitor's
+            // upstream action can occasionally create an issue for an item that it
+            // has already seen, so the issue URL is the durable publication key.
+            const blogUrl = issue.data.body?.trim();
+            if (!blogUrl) {
+                console.log('Issue has no blog URL');
+                return 'false';
+            }
+
+            const existingBlogIssues = await github.rest.issues.listForRepo({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                state: 'all',
+                labels: 'blog',
+                per_page: 1
+            });
+            if (existingBlogIssues.data.length === 0) {
+                throw new Error(
+                    'GitHub API returned no blog issues even though the current issue has the blog label.'
+                );
+            }
+
+            const escapedBlogUrl = blogUrl
+                .replaceAll('\\', '\\\\')
+                .replaceAll('"', '\\"');
+            const matches = await github.rest.search.issuesAndPullRequests({
+                q: `repo:${context.repo.owner}/${context.repo.repo} is:issue label:blog in:body "${escapedBlogUrl}"`,
+                per_page: 100
+            });
+            const duplicate = matches.data.items
+                .filter(candidate => candidate.number !== issue.data.number)
+                .filter(candidate => candidate.body?.trim() === blogUrl)
+                .sort((left, right) => left.number - right.number)[0];
+
+            if (duplicate) {
+                console.log(`Blog URL was already published by issue #${duplicate.number}`);
+                await github.rest.issues.createComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: issue.data.number,
+                    body: `Skipping publication because this blog URL was already processed in #${duplicate.number}.`
+                });
+                await github.rest.issues.update({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: issue.data.number,
+                    state: 'closed',
+                    state_reason: 'not_planned'
+                });
+                await github.rest.issues.lock({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: issue.data.number,
+                    lock_reason: 'resolved'
+                });
+                return 'false';
+            }
+
             return 'true';
 
   moonlight-conditions:
