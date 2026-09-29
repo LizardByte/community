@@ -180,7 +180,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: facebook-post-action
-        uses: LizardByte/actions/actions/facebook_post@39c468549cfb87ccb917e5e5342e18abc926dc48  # v2026.909.30231
+        uses: LizardByte/actions/actions/facebook_post@28374bf43cc8b6ee88b9b8a3419b2ac7a6573906  # v2026.928.123224
         with:
           page_id: ${{ secrets.FACEBOOK_PAGE_ID }}
           access_token: ${{ secrets.FACEBOOK_ACCESS_TOKEN }}
