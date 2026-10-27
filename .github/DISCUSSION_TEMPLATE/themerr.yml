@@ -17,10 +17,21 @@ body:
       description: Which product would you like to discuss?
       multiple: true
       options:
+        - "Themerr"
         - "ThemerrDB"
-        - "Themerr-jellyfin"
-        - "Themerr-kodi"
-        - "Themerr-plex"
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: Select Media Server
+      description: Which Media Server(s) does this discussion apply to?
+      multiple: true
+      options:
+        - "Koko"
+        - "Jellyfin"
+        - "Kodi (Themerr for Kodi is archived)"
+        - "Plex"
+        - "Other (please describe)"
     validations:
       required: true
   - type: dropdown
