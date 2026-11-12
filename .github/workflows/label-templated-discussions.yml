@@ -11,6 +11,12 @@ on:
   discussion:
     types:
       - created
+  workflow_dispatch:
+    inputs:
+      discussion_number:
+        description: 'Discussion number to label using its selected topic'
+        required: true
+        type: number
 
 jobs:
   label-templated-discussion:
@@ -26,7 +32,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OWNER: ${{ github.repository_owner }}
           REPO: ${{ github.event.repository.name }}
-          DISCUSSION_NUMBER: ${{ github.event.discussion.number }}
+          DISCUSSION_NUMBER: ${{ inputs.discussion_number || github.event.discussion.number }}
         run: |
           gh api graphql -F owner="${OWNER}" -F name="${REPO}" -F number="${DISCUSSION_NUMBER}" -f query="
             query(\$owner: String!, \$name: String!, \$number: Int!) {
@@ -53,30 +59,8 @@ jobs:
         with:
           result-encoding: string
           script: |
-            try {
-              const jsdom = require('jsdom');
-              const { JSDOM } = jsdom;
-              const { DISCUSSION_BODY_HTML } = process.env
-
-              const fragment = JSDOM.fragment(DISCUSSION_BODY_HTML);
-              const selectTopicHeader = fragment.querySelector("h3");
-              const templated = selectTopicHeader.textContent === 'Select Topic Area';
-              if (!templated) {
-                return "";
-              }
-
-              const selectedTopicElement = selectTopicHeader.nextElementSibling;
-              if (!selectedTopicElement) {
-                return "";
-              }
-
-              const selectedTopic = selectedTopicElement.textContent.trim().toLowerCase();
-              const validTopics = ["feature request", "question", "bug", "show & tell", "general"];
-              return validTopics.includes(selectedTopic) ? selectedTopic : "";
-
-            } catch (error) {
-              return "";
-            }
+            const { getSelectedTopic } = require('./.github/scripts/get-selected-topic');
+            return getSelectedTopic(process.env.DISCUSSION_BODY_HTML);
 
       - name: Fetch label id for selected topic
         id: fetch_label_id
