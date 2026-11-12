@@ -3,9 +3,7 @@
 # https://github.com/community/community/blob/6c83e35151f0af5614797de5edf90e77aa7e3e23/.github/workflows/label-templated-discussions.yml
 
 name: Label Templated Discussions
-permissions:
-  contents: read
-  discussions: write
+permissions: {}
 
 on:
   discussion:
@@ -21,6 +19,9 @@ on:
 jobs:
   label-templated-discussion:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      discussions: write
 
     steps:
       - name: Checkout
