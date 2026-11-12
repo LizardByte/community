@@ -1,0 +1,30 @@
+---
+name: Tests
+permissions: {}
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  discussion-topics:
+    name: Discussion topics
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38  # v6
+        with:
+          node-version: '24'
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Test discussion topic selection
+        run: npm test
