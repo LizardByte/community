@@ -252,9 +252,11 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
         run: |
           get_emoji() {
-            if [ "$1" == "success" ]; then
+            local job_result="$1"
+
+            if [ "${job_result}" == "success" ]; then
               echo ":white_check_mark:"
-            elif [ "$1" == "failure" ]; then
+            elif [ "${job_result}" == "failure" ]; then
               echo ":x:"
             else
               echo ":grey_question:"
